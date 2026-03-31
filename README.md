@@ -1,1 +1,3 @@
-# challenge-coupon-api
+# Challenge - Coupon API
+
+In progress.
