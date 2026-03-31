@@ -18,7 +18,6 @@ import com.challenge.couponapi.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 /**
  * REST controller for managing coupon resources.
@@ -28,11 +27,19 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequestMapping("/coupons")
-@RequiredArgsConstructor // Generates constructor for final fields (Lombok)
 @Tag(name = "Coupons", description = "Endpoints for coupon lifecycle management")
 public class CouponController {
 
 	private final CouponService couponService;
+
+	/**
+	 * Manual constructor for Dependency Injection. This approach is preferred over
+	 * Lombok in Controllers to ensure accurate code coverage instrumentation by
+	 * JaCoCo.
+	 */
+	public CouponController(CouponService couponService) {
+		this.couponService = couponService;
+	}
 
 	/**
 	 * Creates a new coupon.
