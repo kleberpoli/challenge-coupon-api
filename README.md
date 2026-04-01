@@ -9,7 +9,7 @@ The project includes a `Makefile` to simplify development and execution:
 
 - `make build`: Compiles the application and generates the Docker image.
 - `make up`: Starts the application container.
-- `make test`: Runs unit and integration tests (JUnit 5).
+- `make test`: Runs unit and integration tests (using **Maven Failsafe** for ITs).
 - `make coverage`: Shows the overall test coverage directly in the terminal.
 - `make logs`: Displays container logs in real time.
 - `make clean`: Clears temporary Maven files.
@@ -41,6 +41,8 @@ The project includes a `Makefile` to simplify development and execution:
 src/main/java/com/challenge/couponapi
 ├── config/             # Infrastructure & Framework configurations
 ├── controller/         # Web Layer (REST Endpoints)
+├── docs/               # Project documentation, architecture diagrams, and technical specifications
+│   └── assets/         # Static media files (screenshots, icons, and diagrams) used in the README and docs
 ├── domain/             # Core Business Logic
 │   ├── enums/          # Domain Enumerations (Status)
 │   └── model/          # Rich Entities
@@ -90,7 +92,7 @@ When a validation fails, the API returns a detailed list of fields:
   "timestamp": "2026-03-31T19:00:57",
   "detail": "One or more fields failed validation.",
   "errors": [
-    { "field": "discount", "message": "must be between 1 and 100" }
+    { "field": "discountValue", "message": "must be at least 0.5" }
   ]
 }
 ```
@@ -107,6 +109,12 @@ The project implements a testing pyramid including Unit and Integration tests.
 
 - **Terminal Quick View:** Use `make coverage` to see the percentage summary without leaving the console.
 
+**Coverage Overview:**
+
+![JaCoCo Test Coverage Report](assets/jacoco-report.jpg)
+
+> *Note: The image above reflects the 100% coverage achieved across core business services and domain models.*
+
 
 ## Database (H2)
 
@@ -114,11 +122,19 @@ The application uses an `H2 Persistent File-based database` located in the `./da
 
 - **Console Access:** `http://localhost:8080/h2-console`
 
-- **JDBC URL:** `jdbc:h2:file:./data/coupondb`
+- **JDBC URL:** `jdbc:h2:file:./data/coupondb;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE`
 
 - **Credentials:** Username: `sa` | Password: `password`
 
-**Note:** The database uses `NON_KEYWORDS=KEY,VALUE` to prevent syntax conflicts with reserved SQL words.
+**Database (H2) Configuration Details:**
+
+The application is configured with specific H2 parameters to ensure stability and compatibility:
+
+- `NON_KEYWORDS=KEY,VALUE`: Prevents syntax conflicts by telling H2 to ignore reserved SQL words often used in coupon logic.
+
+- `DB_CLOSE_DELAY=-1`: Ensures the in-memory schema and data remain alive as long as the JVM is running, preventing data loss between connection polls.
+
+- `AUTO_SERVER=TRUE`: Enables "Automatic Mixed Mode," allowing external tools (like the H2 Console or DBeaver) to connect to the database even while the application is active.
 
 
 ## Troubleshooting
@@ -147,9 +163,10 @@ The application is fully containerized to ensure environmental consistency. The 
   2. Build a Docker image based on `eclipse-temurin:17-jre`.
   3. Start the Spring Boot application and map port **8080** to your host.
 
-- **Testing in Docker:** To execute the full test suite within the container environment, use `make test`. This ensures that file permissions and the H2 persistence layer work correctly in a Linux-based container.
+- **Testing in Docker:** To execute the full test suite, use `make test`. The testing environment is configured to use an **In-Memory H2 Database**, ensuring that tests are isolated, fast, and do not interfere with local data files. This process validates the application's internal logic and API routing within a Linux-based container.
 
-- **Persistent Data:** The H2 database file is stored in a Docker volume or mapped directory (`./data`), so your coupons will persist even if the container is recreated.
+- **Persistent Data (Dev/Prod):** When running the application normally, the H2 database uses **file-based persistence** stored in the `./data` directory. This ensures that your coupons and configurations persist even if the container is restarted or recreated.
+
 
 ### Docker Verification & Managemen
 
@@ -222,8 +239,6 @@ This project was designed as a foundation. To evolve it into a production-ready 
   - **Audit Logging:** Track who created or deleted each coupon for compliance.
 
 - **Quality & Observability:**
-
-  - **Test Coverage:** Expand integration tests to achieve >90% overall coverage, including edge cases in the Global Exception Handler.
 
   - **Actuator & Micrometer:** Add Prometheus metrics and health check endpoints for monitoring.
 

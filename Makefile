@@ -8,7 +8,7 @@ help:
 	@echo "  make build    - Compiles the application and generates the Docker image"
 	@echo "  make up       - Starts the application container"
 	@echo "  make down     - Stops and removes the containers"
-	@echo "  make test     - Runs the unit tests (JUnit 5)"
+	@echo "  make test     - Runs unit and integration tests (using Maven Failsafe for ITs)"
 	@echo "  make coverage - Shows the overall test coverage via terminal"
 	@echo "  make logs     - Displays the logs in real time"
 	@echo "  make clean    - Clears temporary Maven files"
@@ -23,7 +23,7 @@ down:
 	docker-compose down
 
 test:
-	mvn clean test jacoco:report
+	mvn clean verify jacoco:report
 
 coverage:
 	@grep -oP 'Total.*?([0-9]{1,3}%)' target/site/jacoco/index.html | head -1 || echo "Report not found. Run 'make test' first."
