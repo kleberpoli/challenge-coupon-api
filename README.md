@@ -38,18 +38,26 @@ The project includes a `Makefile` to simplify development and execution:
 ## Directory Structure
 
 ```plaintext
-src/main/java/com/challenge/couponapi
-├── config/             # Infrastructure & Framework configurations
-├── controller/         # Web Layer (REST Endpoints)
-├── docs/               # Project documentation, architecture diagrams, and technical specifications
-│   └── assets/         # Static media files (screenshots, icons, and diagrams) used in the README and docs
-├── domain/             # Core Business Logic
-│   ├── enums/          # Domain Enumerations (Status)
-│   └── model/          # Rich Entities
-├── dto/                # Data Transfer Objects (Java Records)
-├── exception/          # Custom Business & Infrastructure Exceptions
-├── repository/         # Repository Interfaces (Output Ports)
-└── service/            # Application Logic (Use Cases)
+challenge-coupon-api/
+├── docs/                       # Project documentation and technical specifications
+│   └── assets/                 # Static media (screenshots and diagrams) for README/docs
+├── src/
+│   ├── main/
+│   │   ├── java/com/challenge/couponapi/
+│   │   │   ├── config/         # Infrastructure & Framework configurations
+│   │   │   ├── controller/     # Web Layer (REST Endpoints)
+│   │   │   ├── domain/         # Core Business Logic (Entities & Enums)
+│   │   │   ├── dto/            # Data Transfer Objects (Java Records)
+│   │   │   ├── exception/      # Custom Business & Infrastructure Exceptions
+│   │   │   ├── repository/     # Repository Interfaces (Output Ports)
+│   │   │   └── service/        # Application Logic (Orchestration)
+│   │   └── resources/          # Application properties and static configs
+│   └── test/                   # Unit and Integration test suites
+├── docker-compose.yml          # Docker orchestration and environment setup
+├── Dockerfile                  # Application container image definition
+├── Makefile                    # Automation shortcuts (build, test, up)
+├── pom.xml                     # Maven project configuration
+└── README.md                   # Project overview and documentation
 ```
 
 
@@ -111,7 +119,7 @@ The project implements a testing pyramid including Unit and Integration tests.
 
 **Coverage Overview:**
 
-![JaCoCo Test Coverage Report](assets/jacoco-report.jpg)
+![JaCoCo Test Coverage Report](docs/assets/jacoco-report.jpg)
 
 > *Note: The image above reflects the 100% coverage achieved across core business services and domain models.*
 
