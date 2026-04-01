@@ -206,8 +206,6 @@ To ensure the application is "production-ready", we implemented:
 
 - **Unique Identifiers:** Every resource uses **UUID (v4)** instead of sequential IDs. This prevents "ID Enumeration" attacks and makes the system safer for distributed environments.
 
-- **Health Checks:** The application is prepared for orchestration (Kubernetes/Docker) with basic readiness and liveness checks (Spring Actuator can be toggled in `properties`).
-
 
 ## CI/CD Ready
 
