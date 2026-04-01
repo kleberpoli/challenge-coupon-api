@@ -61,5 +61,4 @@ replay_pid*
 !.env.example
 
 # Local data (volumes, uploads, etc)
-/data/*.mv.db
-/data/*.trace.db
+/data/

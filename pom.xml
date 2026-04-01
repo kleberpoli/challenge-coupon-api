@@ -45,25 +45,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-	    <!-- Security Web: Spring Security support for web applications -->
-	    <!--<dependency>
-	        <groupId>org.springframework.security</groupId>
-	        <artifactId>spring-security-web</artifactId>
-	    </dependency>-->
-
-	    <!-- Security Config: Support for configuring authentication and authorization -->
-	    <!--<dependency>
-	        <groupId>org.springframework.security</groupId>
-	        <artifactId>spring-security-config</artifactId>
-	    </dependency>-->
-
-	    <!-- JWT: Library for creating and validating JSON Web Tokens (JWT) -->
-	    <!--<dependency>
-	        <groupId>io.jsonwebtoken</groupId>
-	        <artifactId>jjwt</artifactId>
-	        <version>0.13.0</version>
-	    </dependency>-->
-
 		<!-- SpringDoc (OpenAPI): Automated API documentation with Swagger UI -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

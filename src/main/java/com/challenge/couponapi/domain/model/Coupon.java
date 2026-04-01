@@ -130,7 +130,6 @@ public class Coupon {
 	 */
 	public void delete() {
 		// TODO check if redeemed coupons can be deleted
-
 		if (this.status == Status.DELETED) {
 			throw new BusinessException("Coupon already deleted");
 		}
@@ -139,8 +138,12 @@ public class Coupon {
 	}
 
 	/**
-	 * It simply cleans the characters, without validating business rules (size, null).
-	 * Useful for the Service to query the database with the normalized data.
+	 * Performs a basic cleanup of the code by removing non-alphanumeric characters
+	 * and converting to uppercase without enforcing business length rules.
+	 * 
+	 * @param code The raw input string to be cleaned.
+	 * @return A normalized uppercase alphanumeric string, or an empty string if
+	 *         input is null.
 	 */
 	public static String rawCleanup(String code) {
 	    if (code == null) return "";
@@ -148,8 +151,14 @@ public class Coupon {
 	}
 
 	/**
-	 * Sanitizes the code by removing non-alphanumeric characters and ensuring
-	 * exactly 6 characters remain.
+	 * Sanitizes the input code by removing special characters, converting to
+	 * uppercase, and strictly validating that the final result contains exactly 6
+	 * characters.
+	 * 
+	 * @param code The raw coupon code to validate and sanitize.
+	 * @return A sanitized 6-character alphanumeric string.
+	 * @throws BusinessException If the code is null or does not result in exactly 6
+	 *                           characters.
 	 */
 	public static String sanitizeAndValidateCode(String code) {
 	    if (code == null) throw new BusinessException("Coupon code cannot be null");
@@ -189,7 +198,11 @@ public class Coupon {
 	}
 
 	/**
-	 * Validates discount value based on the business rule: minimum 0.5.
+	 * Validates that the discount value meets the minimum business requirement.
+	 * 
+	 * @param discountValue The numeric value of the discount to be validated.
+	 * @throws BusinessException If the value is null or less than the required
+	 *                           minimum of 0.5.
 	 */
 	private static void validateDiscountValue(BigDecimal discountValue) {
 		BigDecimal minDiscount = new BigDecimal("0.5");

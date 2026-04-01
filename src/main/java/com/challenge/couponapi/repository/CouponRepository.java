@@ -17,23 +17,20 @@ public interface CouponRepository extends JpaRepository<Coupon, String> {
 
 	/**
 	 * Retrieves a coupon by its unique business code.
-	 * 
-	 * Technical Note: Returns Optional to explicitly handle the absence of a value
-	 * in the Service layer, avoiding potential NullPointerExceptions.
+	 *
+	 * @param code The unique alphanumeric code assigned to the coupon.
+	 * @return An Optional containing the found Coupon, or Optional.empty() if no
+	 *         match exists.
 	 */
 	Optional<Coupon> findByCode(String code);
 
 	/**
-	 * Checks whether a coupon code already exists in the database, including
-	 * soft-deleted records.
-	 *
-	 * Technical note: This method is optimized for existence checks. Instead of
-	 * retrieving full entities (as in findByCode), it executes a lightweight query
-	 * that only verifies the presence of a matching record (e.g., SELECT COUNT(*) >
-	 * 0).
-	 *
-	 * This approach improves performance and intentionally bypasses any soft-delete
-	 * filters to ensure global uniqueness of coupon codes.
+	 * Checks for the existence of a coupon code across the entire database,
+	 * specifically including records marked as soft-deleted.
+	 * 
+	 * @param code The alphanumeric code to check for global uniqueness.
+	 * @return True if the code exists in any state (active or deleted), false
+	 *         otherwise.
 	 */
 	@Query(value = "SELECT COUNT(*) > 0 FROM coupons WHERE code = :code", nativeQuery = true)
 	boolean existsByCodeIncludingDeleted(String code);

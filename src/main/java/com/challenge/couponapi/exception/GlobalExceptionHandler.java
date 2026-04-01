@@ -12,14 +12,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * Global Exception Handler to intercept and format all API errors.
- * Technical Note: This centralizes error logic, allowing Controllers to remain "thin".
+ * 
+ * Technical Note: This centralizes error logic, allowing Controllers to remain
+ * "thin".
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Handles business logic violations (e.g., duplicate coupon code).
-     */
+	/**
+	 * Intercepts and handles business logic violations, such as duplicate codes or
+	 * rule breaches.
+	 * 
+	 * @param ex The BusinessException thrown by the service layer.
+	 * @return A ResponseEntity containing an ErrorResponse with 422 Unprocessable
+	 *         Entity status.
+	 */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
         ErrorResponse error = ErrorResponse.builder()
@@ -31,9 +38,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
     }
 
-    /**
-     * Handles cases where a resource (like a specific coupon code) is not found.
-     */
+	/**
+	 * Intercepts and handles cases where a requested resource does not exist in the
+	 * database.
+	 * 
+	 * @param ex The ResourceNotFoundException containing the missing identifier
+	 *           details.
+	 * @return A ResponseEntity containing an ErrorResponse with 404 Not Found
+	 *         status.
+	 */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
         ErrorResponse error = ErrorResponse.builder()
@@ -45,10 +58,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    /**
-     * Handles @Valid validation failures (Bean Validation).
-     * Technical Note: This maps the complex binding errors into a clean, readable list for the client.
-     */
+	/**
+	 * Intercepts and processes Bean Validation failures triggered by {@code @Valid}
+	 * annotations.
+	 * 
+	 * @param ex The exception containing the binding result and specific field
+	 *           errors.
+	 * @return A ResponseEntity containing an ErrorResponse with 400 Bad Request
+	 *         status and a list of field-specific errors.
+	 */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
         List<ErrorResponse.ValidationError> validationErrors = ex.getBindingResult()
@@ -71,9 +89,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Catch-all handler for unexpected internal server errors.
-     */
+	/**
+	 * Global fallback handler for any unhandled or unexpected exceptions. Prevents
+	 * internal implementation details from leaking to the client.
+	 * 
+	 * @param ex The unexpected Exception encountered during request processing.
+	 * @return A ResponseEntity containing a generic ErrorResponse with 500 Internal
+	 *         Server Error status.
+	 */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse error = ErrorResponse.builder()

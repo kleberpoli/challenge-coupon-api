@@ -43,7 +43,9 @@ public class CouponController {
 
 	/**
 	 * Creates a new coupon.
-	 * @Valid triggers the Bean Validation rules defined in CouponRequest.
+	 * 
+	 * @param couponRequest Validated DTO containing coupon data.
+	 * @return The persisted Coupon entity.
 	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
@@ -53,7 +55,10 @@ public class CouponController {
 	}
 
 	/**
-	 * Retrieves a coupon by its ID.
+	 * Retrieves a coupon by its internal ID.
+	 * 
+	 * @param id The unique internal identifier of the coupon.
+	 * @return A CouponResponse DTO containing the coupon details.
 	 */
 	@GetMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
@@ -63,7 +68,10 @@ public class CouponController {
     }
 
 	/**
-	 * Retrieves a coupon by its unique code.
+	 * Retrieves a coupon by its unique alphanumeric code.
+	 * 
+	 * @param code The alphanumeric code identifying the coupon.
+	 * @return A CouponResponse DTO containing the coupon details.
 	 */
 	@GetMapping("/code/{code}")
 	@ResponseStatus(HttpStatus.OK)
@@ -73,7 +81,9 @@ public class CouponController {
 	}
 
 	/**
-	 * Deletes a coupon (Soft Delete).
+	 * Performs a soft delete on a coupon.
+	 * 
+	 * @param id The unique internal identifier of the coupon to be deleted.
 	 */
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT) // 204 No Content is more standard for successful deletes

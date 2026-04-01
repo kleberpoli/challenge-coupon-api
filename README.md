@@ -15,6 +15,13 @@ The project includes a `Makefile` to simplify development and execution:
 - `make clean`: Clears temporary Maven files.
 
 
+## Requirements
+
+- Java 17
+- Docker & Docker Compose (Optional)
+- Maven 3.x
+
+
 ## Architectural Decisions
 
 - **Rich Domain Model:** Business logic and validations are encapsulated within the `Coupon` entity, avoiding "Anemic Domain Models."
@@ -114,11 +121,19 @@ The application uses an `H2 Persistent File-based database` located in the `./da
 **Note:** The database uses `NON_KEYWORDS=KEY,VALUE` to prevent syntax conflicts with reserved SQL words.
 
 
-## Requirements
+## Troubleshooting
 
-- Java 17
-- Docker & Docker Compose (Optional)
-- Maven 3.x
+**Intermittent `ECONNRESET` in Postman (Windows)**
+
+If you experience `ECONNRESET` or `Connection reset` errors when testing endpoints via **Postman** on Windows (either running natively or via Docker), this is likely due to how the Windows networking stack handles TCP Keep-Alive signals with `localhost`.
+
+**Solution:**
+In Postman, go to the `Headers` tab of your request and manually add the following header:
+
+- **Key:** `Connection`
+- **Value:** `close`
+
+This forces the server and the client to terminate the TCP connection immediately after the response is sent, preventing the "race condition" where Postman tries to reuse a socket that the Windows OS has already flagged for closure.
 
 
 ## Docker: Running & Testing
@@ -135,6 +150,27 @@ The application is fully containerized to ensure environmental consistency. The 
 - **Testing in Docker:** To execute the full test suite within the container environment, use `make test`. This ensures that file permissions and the H2 persistence layer work correctly in a Linux-based container.
 
 - **Persistent Data:** The H2 database file is stored in a Docker volume or mapped directory (`./data`), so your coupons will persist even if the container is recreated.
+
+### Docker Verification & Managemen
+
+Before running any commands, ensure the Docker engine is active. On **Windows**, make sure **Docker Desktop** is started and the engine is "Running".
+
+- **List running containers:** Verifies if the API is active and on which port.
+`docker ps`
+
+- **List local images:** Confirms the `challenge-coupon-api-app` image was built successfully.
+`docker images`
+
+- **Follow real-time application logs:** Essential for checking the Spring Boot startup banner.
+`docker logs -f coupon-api`
+
+- **Check mapped ports:** Verifies if port **8080** is correctly bound to the host.
+`docker port coupon-api`
+
+- **Inspect internal data:** Useful for checking the persistent H2 database file.
+`docker exec -it coupon-api ls -R ./data`
+
+> **Note:** If you encounter a "daemon not running" error, please start **Docker Desktop** and wait for the service to initialize before using `make build` or `make up`.
 
 
 ## Observability & Logs
@@ -194,3 +230,5 @@ This project was designed as a foundation. To evolve it into a production-ready 
 - **Security & Cloud:**
 
   - **Environment Isolation & Secrets:** Transition from `application.properties` to **Environment Variables** and integrate with a **Secret Manager** (like AWS Secrets Manager or HashiCorp Vault) to protect sensitive data like database credentials and JWT keys.
+
+  - **Database Versioning with Flyway:** Implement **Flyway** migrations for **PostgreSQL** to ensure a consistent, versioned database state across all environments, replacing `ddl-auto` with a production-grade schema evolution process.

@@ -16,9 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Service orchestrator for Coupon operations.
  * 
- * Technical Note: Following Clean Architecture, business rules reside within the 
- * Domain Model (Coupon entity). This service acts as a mediator between the external 
- * API and the persistence layer.
+ * Technical Note: Following Clean Architecture, business rules reside within
+ * the Domain Model (Coupon entity). This service acts as a mediator between the
+ * external API and the persistence layer.
  */
 @Slf4j
 @Service
@@ -28,7 +28,11 @@ public class CouponService {
 	private final CouponRepository couponRepository;
 
 	/**
-	 * Finds a coupon by its technical ID.
+	 * Retrieves a coupon from the database using its technical UUID.
+	 *
+	 * @param id The unique internal identifier of the coupon.
+	 * @return The found Coupon entity.
+	 * @throws ResourceNotFoundException If no coupon matches the provided ID.
 	 */
 	@Transactional(readOnly = true)
 	public Coupon getCouponById(String id) {
@@ -37,16 +41,28 @@ public class CouponService {
 	}
 
 	/**
-	 * Finds a coupon by its business key (code).
+	 * Retrieves an active coupon using its business code. The input is normalized
+	 * to uppercase to ensure a consistent lookup.
+	 *
+	 * @param code The alphanumeric code assigned to the coupon.
+	 * @return The found Coupon entity.
+	 * @throws ResourceNotFoundException If no active coupon matches the provided
+	 *                                   code.
 	 */
-	@Transactional(readOnly = true)
 	public Coupon getCouponByCode(String code) {
-		return couponRepository.findByCode(code)
-				.orElseThrow(() -> new ResourceNotFoundException("No coupon found with code: " + code));
+	    String normalizedCode = (code != null) ? code.toUpperCase().trim() : "";
+	    return couponRepository.findByCode(normalizedCode)
+	            .orElseThrow(() -> new ResourceNotFoundException("No coupon found with code: " + code));
 	}
 
 	/**
-	 * Orchestrates the creation of a new coupon.
+	 * Orchestrates the creation of a new coupon by validating uniqueness and
+	 * delegating business rules to the domain model.
+	 *
+	 * @param request DTO containing the data for the new coupon.
+	 * @return The persisted Coupon entity.
+	 * @throws BusinessException If the code is already registered or a concurrency
+	 *                           conflict occurs.
 	 */
 	@Transactional
 	public Coupon createCoupon(CouponRequest request) {
@@ -79,7 +95,11 @@ public class CouponService {
 	}
 
 	/**
-	 * Orchestrates a soft delete.
+	 * Performs a soft delete on a coupon identified by its ID. Transitions the
+	 * coupon status to 'DELETED' without removing the record from the database.
+	 *
+	 * @param id The unique internal identifier of the coupon to be deleted.
+	 * @throws ResourceNotFoundException If the coupon does not exist.
 	 */
 	@Transactional
 	public void deleteCoupon(String id) {
