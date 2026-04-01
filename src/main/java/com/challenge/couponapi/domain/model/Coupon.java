@@ -160,7 +160,7 @@ public class Coupon {
 	 * @throws BusinessException If the code is null or does not result in exactly 6
 	 *                           characters.
 	 */
-	public static String sanitizeAndValidateCode(String code) {
+	private static String sanitizeAndValidateCode(String code) {
 	    if (code == null) throw new BusinessException("Coupon code cannot be null");
 
 	    // 1. Remove special characters
