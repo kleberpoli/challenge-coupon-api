@@ -13,11 +13,16 @@ class CouponApiApplicationTests {
 	@Test
 	@DisplayName("Should load the Spring Context successfully")
 	void contextLoads() {
+		// Act + Assert: context initialization succeeds if no exception is thrown
 	}
 
 	@Test
 	@DisplayName("Should execute main method for coverage purposes")
 	void mainMethodTest() {
+
+		// Act: invoke application entry point
 		CouponApiApplication.main(new String[] {});
+
+		// Assert: no exception means successful execution
 	}
 }

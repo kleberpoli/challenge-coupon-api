@@ -24,8 +24,10 @@ import com.challenge.couponapi.domain.enums.Status;
 import com.challenge.couponapi.exception.BusinessException;
 
 /**
- * Unit tests for the Coupon entity.
- * Covers business rules for sanitization, validation, and lifecycle management.
+ * Unit tests for Coupon domain entity.
+ *
+ * Focus: validate core business rules (sanitization, constraints, lifecycle
+ * behavior) independent of infrastructure.
  */
 @DisplayName("Coupon Domain Unit Tests")
 class CouponTest {
@@ -50,7 +52,11 @@ class CouponTest {
         })
         @DisplayName("Should correctly sanitize and truncate code")
     	void shouldSanitizeCode(String input, String expected) {
+
+    		// Act: create coupon with raw input
             Coupon coupon = Coupon.create(input, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, true);
+
+            // Assert: code is sanitized, normalized and truncated
             assertEquals(expected, coupon.getCode());
         }
 
@@ -58,14 +64,20 @@ class CouponTest {
         @ValueSource(strings = {"PR@M15", "ABC", "12345", " "})
         @DisplayName("Should throw exception when sanitized result is shorter than 6 characters")
         void shouldThrowWhenShort(String invalidInput) {
-            assertThrows(BusinessException.class, () -> 
+            // Act + Assert: invalid sanitized code must trigger business validation error
+        	assertThrows(BusinessException.class, () -> 
                 Coupon.create(invalidInput, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, true));
         }
 
         @Test
         @DisplayName("Should return empty string for rawCleanup when code is null")
         void rawCleanupNullHanding() {
-            assertEquals("", Coupon.rawCleanup(null));
+
+            // Act: cleanup null input
+            String result = Coupon.rawCleanup(null);
+
+            // Assert: null input becomes empty string
+            assertEquals("", result);
         }
     }
 
@@ -74,8 +86,9 @@ class CouponTest {
     class ConstraintTests {
 
         @Test
-        @DisplayName("Should fail when code is null")
+        @DisplayName("Should fail when coupon code is null")
         void shouldFailNullCode() {
+        	// Act + Assert: null code must be rejected
             assertThrows(BusinessException.class, () -> 
                 Coupon.create(null, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, true));
         }
@@ -84,18 +97,24 @@ class CouponTest {
         @NullSource
         @DisplayName("Should fail when expiration date is null")
         void shouldFailNullDate(OffsetDateTime nullDate) {
-        	// Technical Note: `@NullSource` Added to ensure the system does not break  
-        	// ​​with null values coming from the database or from misconfigured mappers
+
+        	// Act: attempt to create with null expiration date
             BusinessException ex = assertThrows(BusinessException.class, () -> 
                 Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, nullDate, true));
+
+            // Assert: correct validation message is returned
             assertEquals("Expiration date is required", ex.getMessage());
         }
 
         @Test
         @DisplayName("Should fail when expiration date is in the past")
         void shouldFailPastDate() {
+        	
+            // Arrange: date in the past
             OffsetDateTime pastDate = OffsetDateTime.now(ZoneOffset.UTC).minusHours(1);
-            assertThrows(BusinessException.class, () -> 
+
+            // Act + Assert: past date must be rejected
+            assertThrows(BusinessException.class, () ->
                 Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, pastDate, true));
         }
 
@@ -103,6 +122,7 @@ class CouponTest {
         @ValueSource(strings = {"0.49", "0.0", "-5.0"})
         @DisplayName("Should fail when discount is below 0.5")
         void shouldFailLowDiscount(String val) {
+        	// Act + Assert: discount below minimum threshold must fail
             assertThrows(BusinessException.class, () -> 
                 Coupon.create(VALID_CODE, VALID_DESC, new BigDecimal(val), FUTURE_DATE, true));
         }
@@ -110,6 +130,7 @@ class CouponTest {
         @Test
         @DisplayName("Should fail when discount is null")
         void shouldFailNullDiscount() {
+        	// Act + Assert: null discount must be rejected
             assertThrows(BusinessException.class, () -> 
                 Coupon.create(VALID_CODE, VALID_DESC, null, FUTURE_DATE, true));
         }
@@ -122,8 +143,11 @@ class CouponTest {
         @Test
         @DisplayName("Should instantiate with correct initial state")
         void shouldHaveCorrectInitialState() {
-            Coupon coupon = Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, false);
-            
+
+        	// Act: create new coupon instance
+        	Coupon coupon = Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, false);
+
+        	// Assert: verify default state values
             assertAll(
                 () -> assertEquals(Status.ACTIVE, coupon.getStatus()),
                 () -> assertFalse(coupon.isPublished()),
@@ -135,22 +159,33 @@ class CouponTest {
         @Test
         @DisplayName("Should perform soft delete by updating status")
         void shouldSoftDelete() {
+
+            // Arrange: active coupon
             Coupon coupon = Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, true);
+
+            // Act: execute soft delete
             coupon.delete();
+
+            // Assert: status must change to DELETED
             assertEquals(Status.DELETED, coupon.getStatus());
         }
 
         @Test
         @DisplayName("Should block deletion if already deleted")
         void shouldFailDoubleDelete() {
+
+            // Arrange: already deleted coupon
             Coupon coupon = Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, true);
             coupon.delete();
-            
+
+            // Act: attempt second deletion
             BusinessException ex = assertThrows(BusinessException.class, coupon::delete);
+
+            // Assert: correct error message is returned
             assertEquals("Coupon already deleted", ex.getMessage());
         }
     }
-    
+
     @Nested
     @DisplayName("Accessors & Technical Coverage")
     class TechnicalCoverageTests {
@@ -158,8 +193,11 @@ class CouponTest {
         @Test
         @DisplayName("Should exercise all getters for coverage")
         void shouldExerciseGetters() {
+
+        	// Arrange: create coupon
             Coupon coupon = Coupon.create(VALID_CODE, VALID_DESC, VALID_DISCOUNT, FUTURE_DATE, true);
 
+            // Assert: verify all getters return expected values
             assertAll(
                 () -> assertEquals(VALID_DESC, coupon.getDescription()),
                 () -> assertEquals(VALID_DISCOUNT, coupon.getDiscountValue()),
@@ -173,17 +211,20 @@ class CouponTest {
         @Test
         @DisplayName("Should exercise protected no-args constructor for JPA coverage")
         void shouldExerciseNoArgsConstructor() {
-            // Using a subclass or reflection to exercise the protected constructor 
-            // required by Hibernate/JPA to reach 100% instruction coverage
+
+        	// Arrange: helper subclass to access protected constructor
             class JpaCoupon extends Coupon {
                 public JpaCoupon() { super(); }
             }
+
+            // Act + Assert: ensure constructor can be invoked
             assertNotNull(new JpaCoupon());
         }
 
         @Test
         @DisplayName("Should correctly cleanup raw code without business validation")
         void shouldExerciseRawCleanup() {
+        	// Act + Assert: verify raw cleanup behavior without validation rules
             assertAll(
                 () -> assertEquals("ABC123", Coupon.rawCleanup("abc-123!")),
                 () -> assertEquals("", Coupon.rawCleanup(null)),

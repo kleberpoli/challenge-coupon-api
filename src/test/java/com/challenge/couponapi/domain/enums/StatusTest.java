@@ -24,18 +24,25 @@ class StatusTest {
     })
     @DisplayName("Should convert valid strings to Status enum")
     void shouldConvertValidStrings(String input, Status expected) {
-        assertEquals(expected, Status.fromString(input));
+
+        // Act: convert input string to enum
+        Status result = Status.fromString(input);
+
+        // Assert: result matches expected enum value (case-insensitive, trimmed)
+        assertEquals(expected, result);
     }
 
     @Test
     @DisplayName("Should throw BusinessException for invalid status string")
     void shouldThrowExceptionForInvalidString() {
+    	// Act + Assert: invalid value must trigger exception
         assertThrows(BusinessException.class, () -> Status.fromString("INVALID_STATUS"));
     }
 
     @Test
     @DisplayName("Should throw BusinessException for null input")
     void shouldThrowExceptionForNull() {
+    	// Act + Assert: null input must be rejected
         assertThrows(BusinessException.class, () -> Status.fromString(null));
     }
 }
