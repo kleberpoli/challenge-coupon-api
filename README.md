@@ -176,7 +176,7 @@ The application is fully containerized to ensure environmental consistency. The 
 - **Persistent Data (Dev/Prod):** When running the application normally, the H2 database uses **file-based persistence** stored in the `./data` directory. This ensures that your coupons and configurations persist even if the container is restarted or recreated.
 
 
-### Docker Verification & Managemen
+### Docker Verification & Management
 
 Before running any commands, ensure the Docker engine is active. On **Windows**, make sure **Docker Desktop** is started and the engine is "Running".
 
