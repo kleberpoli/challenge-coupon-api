@@ -40,7 +40,8 @@ The project includes a `Makefile` to simplify development and execution:
 ```plaintext
 challenge-coupon-api/
 ├── docs/                       # Project documentation and technical specifications
-│   └── assets/                 # Static media (screenshots and diagrams) for README/docs
+│   ├── assets/                 # Static media (screenshots and diagrams) for README/docs
+│   └── bruno/                  # Bruno client collections for APIs
 ├── src/
 │   ├── main/
 │   │   ├── java/com/challenge/couponapi/
@@ -76,6 +77,28 @@ Once the application is running, access the **Swagger UI** for full API document
 | **GET**    | `/coupons/{id}`          | Retrieves a coupon by its UUID                |
 | **GET**    | `/coupons/code/{code}` | Retrieves a coupon by its unique string code  |
 | **DELETE** | `/coupons/{id}`          | Performs a **soft delete** on the coupon          |
+
+**Bruno Collection for Manual API Testing**
+
+To facilitate manual testing of the API alongside the **Swagger UI**, a **Bruno** client collection is available at:
+`./docs/bruno/collections.yml`
+
+**1. Download and install Bruno**
+
+Install Bruno according to your operating system from [here](https://www.usebruno.com/downloads).
+
+**2. Import the collection**
+
+- Open Bruno and navigate to **Workspace > Overview > Import Collection**.
+- In the import window, select the `.yml` file from the path above and choose the desired location.
+
+**3. Select the environment**
+
+- Open any request in the imported collection.
+- If no environment is selected, choose the **DEV** environment.
+- This environment is pre-configured for the project and contains a variable for the application's `basePath`.
+
+Now you are ready to test the API manually using Bruno.
 
 
 ## Error Reference Table
