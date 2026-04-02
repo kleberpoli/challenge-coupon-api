@@ -92,11 +92,15 @@ Install Bruno according to your operating system from [here](https://www.usebrun
 - Open Bruno and navigate to **Workspace > Overview > Import Collection**.
 - In the import window, select the `.yml` file from the path above and choose the desired location.
 
+![Bruno Import Collection](docs/assets/bruno-import-collection.jpg)
+
 **3. Select the environment**
 
 - Open any request in the imported collection.
 - If no environment is selected, choose the **DEV** environment.
 - This environment is pre-configured for the project and contains a variable for the application's `basePath`.
+
+![Bruno Select Environment](docs/assets/bruno-select-environment.jpg)
 
 Now you are ready to test the API manually using Bruno.
 
@@ -135,8 +139,7 @@ The project implements a testing pyramid including Unit and Integration tests.
 
 - **Execution:** Run `make test`.
 
-- **Reports:** After running tests, the **JaCoCo** report is generated at:
-`target/site/jacoco/index.html`
+- **Reports:** After running tests, the **JaCoCo** report is generated at: `target/site/jacoco/index.html`
 
 - **Terminal Quick View:** Use `make coverage` to see the percentage summary without leaving the console.
 
