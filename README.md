@@ -10,7 +10,7 @@ The project includes a `Makefile` to simplify development and execution:
 - `make build`: Compiles the application and generates the Docker image.
 - `make up`: Starts the application container.
 - `make test`: Runs unit and integration tests (using **Maven Failsafe** for ITs).
-- `make coverage`: Shows the overall test coverage directly in the terminal.
+- `make coverage`: Shows a summary of test coverage directly in the terminal (ensure you run `make test` first to generate the report).
 - `make logs`: Displays container logs in real time.
 - `make clean`: Clears temporary Maven files.
 
@@ -20,6 +20,7 @@ The project includes a `Makefile` to simplify development and execution:
 - Java 17
 - Docker & Docker Compose (Optional)
 - Maven 3.x
+- (Recommended) Postman or Bruno for API testing
 
 
 ## Architectural Decisions
@@ -42,6 +43,7 @@ challenge-coupon-api/
 ├── docs/                       # Project documentation and technical specifications
 │   ├── assets/                 # Static media (screenshots and diagrams) for README/docs
 │   └── bruno/                  # Bruno client collections for APIs
+├── scripts/                    # Utility scripts (e.g., coverage report parsing)
 ├── src/
 │   ├── main/
 │   │   ├── java/com/challenge/couponapi/
