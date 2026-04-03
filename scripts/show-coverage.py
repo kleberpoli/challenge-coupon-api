@@ -6,9 +6,9 @@ Reads JaCoCo XML report and prints total instruction coverage in a clean, profes
 """
 
 # Standard library imports
-import sys                         # For exiting with error codes
-import xml.etree.ElementTree as ET # For parsing XML
-from pathlib import Path           # For handling file paths in a cross-platform way
+import sys                         # System utilities
+import xml.etree.ElementTree as ET # XML handling
+from pathlib import Path           # File path handling
 
 # Path to JaCoCo XML report
 JACOCO_XML = Path("target/site/jacoco/jacoco.xml")
