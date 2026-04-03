@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -84,6 +85,33 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .detail("One or more fields failed validation.")
                 .errors(validationErrors)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    /**
+     * Intercepts and handles malformed JSON requests, such as invalid syntax,
+     * missing body, or incorrect data types (e.g., sending '.8' instead of '0.8').
+     * 
+     * Technical Note: Numbers in JSON must follow RFC 8259, which requires a
+     * leading digit for decimals. This handler prevents a 500 Internal Server
+     * Error when Jackson fails to parse the payload.
+     * 
+     * @param ex The HttpMessageNotReadableException thrown during JSON
+     *           deserialization.
+     * @return A ResponseEntity containing an ErrorResponse with 400 Bad Request
+     *         status.
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex) {
+        String detailMessage = "The request body is malformed or contains invalid data formats.";
+
+        ErrorResponse error = ErrorResponse.builder()
+                .title("Malformed JSON Request")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
+                .detail(detailMessage)
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
